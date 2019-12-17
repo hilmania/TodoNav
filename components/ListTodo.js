@@ -41,13 +41,13 @@ export default class ListTodo extends Component {
                                         text: item.value,
                                         done: item.done
                                     })}
-                                    style={{fontSize:20}}>
-                                        {item.value} - {item.done} 
+                                    style={{fontSize:20, marginLeft:20}}>
+                                        {'\u2022'} {item.value} - {item.done} 
                                     </Text>
                                 </TouchableOpacity>
                             );
                         }}
-                        keyExtractor={item => item.done}/>
+                        keyExtractor={item => item.id}/>
                 </SafeAreaView>
                 <ActionButton buttonColor="rgba(231,76,60,1)"
                 onPress={()=> this.props.navigation.navigate('AddScreen')}/>

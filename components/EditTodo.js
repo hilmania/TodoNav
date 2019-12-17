@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, Picker } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, Picker, Alert } from 'react-native';
 import Constants from 'expo-constants';
 import * as SQLite from 'expo-sqlite';
 import { supportsOrientationLockAsync} from 'expo/build/ScreenOrientation/ScreenOrientation';
@@ -7,6 +7,9 @@ import { supportsOrientationLockAsync} from 'expo/build/ScreenOrientation/Screen
 const db = SQLite.openDatabase('todo.db');
 
 export default class EditTodo extends Component {
+    static navigationOptions = {
+        title: 'Edit Todo',
+    };
     state = {
         id: '',
         text: '',
@@ -38,7 +41,39 @@ export default class EditTodo extends Component {
             }
         );
     }
-    
+
+    hapusTodo = () => {
+        Alert.alert(
+            'Konfirmasi',
+            'Menghapus data?',
+            [
+                {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+
+                },
+                {
+                    text: 'OK', 
+                    onPress: () => {
+                        db.transaction(
+                            tx => {
+                                tx.executeSql("DELETE FROM todos WHERE id=?", [this.state.id]);
+                            },
+                            error => {
+                                alert(error);
+                            },
+                            () => {
+                                this.props.navigation.push('ListScreen')
+                            }
+                        );
+                    }
+                },
+            ],
+            {cancelable: true},
+        );
+    }
+
     render(){
         return (
             <View style={styles.container}>
@@ -55,9 +90,16 @@ export default class EditTodo extends Component {
                         <Picker.Item label="OnProgress" value="OnProgress"/>
                         <Picker.Item label="Done" value="Done"/>
                     </Picker>
+                    <View style={{marginBottom:10}}>
                     <Button
                         onPress={this.editTodo}
                         title="Ubah Todo"/>
+                    </View>
+                    <View>
+                        <Button
+                        onPress={this.hapusTodo}
+                        title="Hapus Todo"/>
+                    </View>
                 </View>
             </View>
         )
